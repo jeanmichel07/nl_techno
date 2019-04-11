@@ -7,6 +7,7 @@ use App\Repository\EquipeRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -96,6 +97,27 @@ class EquipeController extends AbstractController
     {
         return $this->render('equipe/show.html.twig',[
             'e'=>$equipe
+        ]);
+    }
+
+    /**
+     * @Route("/edit/equipe/{id}", name="edit_equipe")
+     * @param Equipe $equipe
+     * @param Request $request
+     * @return Response
+     */
+    public function update(Equipe $equipe, Request $request):Response
+    {
+        $equipe->setImage(
+            new File($this->getParameter('upload_directory').'/'.$equipe->getImage()
+            ));
+        $form=$this->createFormBuilder($equipe)
+            ->add('nom')
+            ->add('poste')
+            ->add('image',FileType::class,[])
+            ->getForm();
+        return $this->render('equipe/update.html.twig',[
+            'form'=>$form->createView()
         ]);
     }
 }
